@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:sounding_storage/base/api/api_endpoint.dart';
 import 'package:sounding_storage/base/constants/strings.dart';
@@ -37,7 +39,10 @@ class LoginNotifier extends ChangeNotifier {
                 StorageUtils.saveData('username', response.data.user.username);
                 StorageUtils.saveData('max_sounding',
                     response.data.setup.mill.totalSampleSoundingCpo);
-                setCompany(response.data.user.companyName, response.data.user.companyAlias);
+                setCompany(response.data.user.companyName,
+                    response.data.user.companyAlias);
+                log('cek companyName : ${response.data.user.companyName}');
+                log('cek companyAlias : ${response.data.user.companyAlias}');
                 NavigatorUtils.navigateTo(context, HomeScreen());
               } else {
                 warningDialog(context, Strings.LOGIN_FAILED,

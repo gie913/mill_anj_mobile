@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -128,10 +130,24 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
   }
 
   getListSoundingCpoYesterday() async {
+    String companyAliasTemp = await StorageUtils.readData('company_alias');
+    setState(() {
+      companyAlias = companyAliasTemp;
+    });
+
+    if (companyAlias == 'PMP') {
+      getListSoundingCpoYesterdayPMP();
+    } else {
+      getListSoundingCpoYesterdayDefault();
+    }
+  }
+
+  getListSoundingCpoYesterdayDefault() async {
     List<SoundingCpo> list =
         await DatabaseSoundingCpo().selectSoundingYesterday();
     if (list.isNotEmpty) {
       for (int i = 0; i < list.length; i++) {
+        log('cek code : ${list[i].mStorageTankCode}');
         if (list[i].mStorageTankCode == "ATK1") {
           sounding1tank1.text = list[i].sounding1.toString();
           sounding2tank1.text = list[i].sounding2.toString();
@@ -188,7 +204,6 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
           density4 = list[i].density;
           roundingTonaseTank4.text = list[i].roundingTonnage.toString();
         }
-
         if (list[i].mStorageTankCode == "ATK5") {
           sounding1tank5.text = list[i].sounding1.toString();
           sounding2tank5.text = list[i].sounding2.toString();
@@ -202,6 +217,81 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
           size5 = list[i].size;
           density5 = list[i].density;
           roundingTonaseTank5.text = list[i].roundingTonnage.toString();
+        }
+      }
+    } else {
+      setState(() {
+        usingDataYesterday = false;
+      });
+      Fluttertoast.showToast(
+        msg: "Data Sounding Kemarin Tidak ada",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }
+  }
+
+  getListSoundingCpoYesterdayPMP() async {
+    List<SoundingCpo> list =
+        await DatabaseSoundingCpo().selectSoundingYesterday();
+    if (list.isNotEmpty) {
+      for (int i = 0; i < list.length; i++) {
+        log('cek code : ${list[i].mStorageTankCode}');
+        if (list[i].mStorageTankCode == "ATK1") {
+          sounding1tank1.text = list[i].sounding1.toString();
+          sounding2tank1.text = list[i].sounding2.toString();
+          sounding3tank1.text = list[i].sounding3.toString();
+          averageTank1.text = list[i].avgSounding.toString();
+          temperatureTank1.text = list[i].temperature.toString();
+          ukuranTank1.text = list[i].size.toStringAsFixed(3);
+          isChecked1 = list[i].isManual;
+          storageTankCode1 = list[i].mStorageTankCode;
+          storageTankID1 = list[i].mStorageTankId;
+          size1 = list[i].size;
+          density1 = list[i].density;
+          roundingTonaseTank1.text = list[i].roundingTonnage.toString();
+        }
+        if (list[i].mStorageTankCode == "ATK2") {
+          sounding1tank2.text = list[i].sounding1.toString();
+          sounding2tank2.text = list[i].sounding2.toString();
+          sounding3tank2.text = list[i].sounding3.toString();
+          averageTank2.text = list[i].avgSounding.toString();
+          temperatureTank2.text = list[i].temperature.toString();
+          ukuranTank2.text = list[i].size.toStringAsFixed(3);
+          isChecked2 = list[i].isManual;
+          storageTankCode2 = list[i].mStorageTankCode;
+          storageTankID2 = list[i].mStorageTankId;
+          size2 = list[i].size;
+          density2 = list[i].density;
+          roundingTonaseTank2.text = list[i].roundingTonnage.toString();
+        }
+        if (list[i].mStorageTankCode == "ATK11") {
+          sounding1tank3.text = list[i].sounding1.toString();
+          sounding2tank3.text = list[i].sounding2.toString();
+          sounding3tank3.text = list[i].sounding3.toString();
+          averageTank3.text = list[i].avgSounding.toString();
+          temperatureTank3.text = list[i].temperature.toString();
+          ukuranTank3.text = list[i].size.toStringAsFixed(3);
+          isChecked3 = list[i].isManual;
+          storageTankCode3 = list[i].mStorageTankCode;
+          storageTankID3 = list[i].mStorageTankId;
+          size3 = list[i].size;
+          density3 = list[i].density;
+          roundingTonaseTank3.text = list[i].roundingTonnage.toString();
+        }
+        if (list[i].mStorageTankCode == "ATK12") {
+          sounding1tank4.text = list[i].sounding1.toString();
+          sounding2tank4.text = list[i].sounding2.toString();
+          sounding3tank4.text = list[i].sounding3.toString();
+          averageTank4.text = list[i].avgSounding.toString();
+          temperatureTank4.text = list[i].temperature.toString();
+          ukuranTank4.text = list[i].size.toStringAsFixed(3);
+          isChecked4 = list[i].isManual;
+          storageTankCode4 = list[i].mStorageTankCode;
+          storageTankID4 = list[i].mStorageTankId;
+          size4 = list[i].size;
+          density4 = list[i].density;
+          roundingTonaseTank4.text = list[i].roundingTonnage.toString();
         }
       }
     } else {
@@ -286,6 +376,8 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
   setCompanyTitle() async {
     String companyNameTemp = await StorageUtils.readData('company_name');
     String companyAliasTemp = await StorageUtils.readData('company_alias');
+    log('companyName : $companyNameTemp');
+    log('companyAlias : $companyAliasTemp');
     setState(() {
       companyName = companyNameTemp;
       companyAlias = companyAliasTemp;
@@ -319,6 +411,19 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
   }
 
   getSoundingCPO(Sounding sounding) async {
+    String companyAliasTemp = await StorageUtils.readData('company_alias');
+    setState(() {
+      companyAlias = companyAliasTemp;
+    });
+
+    if (companyAlias == 'PMP') {
+      getSoundingCPOPMP(sounding);
+    } else {
+      getSoundingCPODefault(sounding);
+    }
+  }
+
+  getSoundingCPODefault(Sounding sounding) async {
     List<SoundingCpo> list =
         await DatabaseSoundingCpo().selectSoundingCpo(sounding);
     for (int i = 0; i < list.length; i++) {
@@ -391,6 +496,69 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
         size5 = list[i].size;
         density5 = list[i].density;
         roundingTonaseTank5.text = list[i].roundingTonnage.toString();
+      }
+    }
+  }
+
+  getSoundingCPOPMP(Sounding sounding) async {
+    List<SoundingCpo> list =
+        await DatabaseSoundingCpo().selectSoundingCpo(sounding);
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].mStorageTankCode == "ATK1") {
+        sounding1tank1.text = list[i].sounding1.toString();
+        sounding2tank1.text = list[i].sounding2.toString();
+        sounding3tank1.text = list[i].sounding3.toString();
+        averageTank1.text = list[i].avgSounding.toString();
+        temperatureTank1.text = list[i].temperature.toString();
+        ukuranTank1.text = list[i].size.toStringAsFixed(3);
+        isChecked1 = list[i].isManual;
+        storageTankCode1 = list[i].mStorageTankCode;
+        storageTankID1 = list[i].mStorageTankId;
+        size1 = list[i].size;
+        density1 = list[i].density;
+        roundingTonaseTank1.text = list[i].roundingTonnage.toString();
+      }
+      if (list[i].mStorageTankCode == "ATK2") {
+        sounding1tank2.text = list[i].sounding1.toString();
+        sounding2tank2.text = list[i].sounding2.toString();
+        sounding3tank2.text = list[i].sounding3.toString();
+        averageTank2.text = list[i].avgSounding.toString();
+        temperatureTank2.text = list[i].temperature.toString();
+        ukuranTank2.text = list[i].size.toStringAsFixed(3);
+        isChecked2 = list[i].isManual;
+        storageTankCode2 = list[i].mStorageTankCode;
+        storageTankID2 = list[i].mStorageTankId;
+        size2 = list[i].size;
+        density2 = list[i].density;
+        roundingTonaseTank2.text = list[i].roundingTonnage.toString();
+      }
+      if (list[i].mStorageTankCode == "ATK11") {
+        sounding1tank3.text = list[i].sounding1.toString();
+        sounding2tank3.text = list[i].sounding2.toString();
+        sounding3tank3.text = list[i].sounding3.toString();
+        averageTank3.text = list[i].avgSounding.toString();
+        temperatureTank3.text = list[i].temperature.toString();
+        ukuranTank3.text = list[i].size.toStringAsFixed(3);
+        isChecked3 = list[i].isManual;
+        storageTankCode3 = list[i].mStorageTankCode;
+        storageTankID3 = list[i].mStorageTankId;
+        size3 = list[i].size;
+        density3 = list[i].density;
+        roundingTonaseTank3.text = list[i].roundingTonnage.toString();
+      }
+      if (list[i].mStorageTankCode == "ATK12") {
+        sounding1tank4.text = list[i].sounding1.toString();
+        sounding2tank4.text = list[i].sounding2.toString();
+        sounding3tank4.text = list[i].sounding3.toString();
+        averageTank4.text = list[i].avgSounding.toString();
+        temperatureTank4.text = list[i].temperature.toString();
+        ukuranTank4.text = list[i].size.toStringAsFixed(3);
+        isChecked4 = list[i].isManual;
+        storageTankCode4 = list[i].mStorageTankCode;
+        storageTankID4 = list[i].mStorageTankId;
+        size4 = list[i].size;
+        density4 = list[i].density;
+        roundingTonaseTank4.text = list[i].roundingTonnage.toString();
       }
     }
   }
@@ -519,12 +687,12 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
                         Text("Tanki", style: text14Bold),
                         Flexible(
                           child: Container(
-                            width: 200,
                             child: Card(
                               child: DropdownButtonHideUnderline(
                                 child: ButtonTheme(
                                   alignedDropdown: true,
                                   child: DropdownButton(
+                                      alignment: Alignment.centerRight,
                                       value: dropDownValueHint,
                                       items: formSounding.items
                                           .map((String item) =>
@@ -536,6 +704,8 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
                                       onChanged: (String newValue) {
                                         setState(() {
                                           dropDownValueHint = newValue;
+                                          print(
+                                              'cek dropDownValueHint : $dropDownValueHint');
                                         });
                                       }),
                                 ),
@@ -546,25 +716,49 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
                       ],
                     );
                   }),
-                  Consumer<FormSoundingNotifier>(
+                  if (companyAlias == 'PMP')
+                    Consumer<FormSoundingNotifier>(
                       builder: (context, formSounding, child) {
-                    return formSounding.storageTank.isNotEmpty
-                        ? dropDownValueHint == 'STORAGE TANK 1'
-                            ? containerTank1(formSounding.storageTank[0])
-                            : dropDownValueHint == 'STORAGE TANK 2'
-                                ? containerTank2(formSounding.storageTank[1])
-                                : dropDownValueHint == 'STORAGE TANK 3'
-                                    ? containerTank3(
-                                        formSounding.storageTank[2])
-                                    : dropDownValueHint == 'STORAGE TANK 4'
-                                        ? containerTank4(
-                                            formSounding.storageTank[3])
-                                        : dropDownValueHint == 'STORAGE TANK 5'
-                                            ? containerTank5(
-                                                formSounding.storageTank[4])
+                        return formSounding.storageTank.isNotEmpty
+                            ? dropDownValueHint == 'STORAGE TANK 1'
+                                ? containerTank1(formSounding.storageTank[0])
+                                : dropDownValueHint == 'STORAGE TANK 2'
+                                    ? containerTank2(
+                                        formSounding.storageTank[1])
+                                    : dropDownValueHint == 'STORAGE TANK 1 CPKO'
+                                        ? containerTank3(
+                                            formSounding.storageTank[2])
+                                        : dropDownValueHint ==
+                                                'STORAGE TANK 2 CPKO'
+                                            ? containerTank4(
+                                                formSounding.storageTank[3])
                                             : Container()
-                        : Container();
-                  }),
+                            : Container();
+                      },
+                    )
+                  else
+                    Consumer<FormSoundingNotifier>(
+                      builder: (context, formSounding, child) {
+                        return formSounding.storageTank.isNotEmpty
+                            ? dropDownValueHint == 'STORAGE TANK 1'
+                                ? containerTank1(formSounding.storageTank[0])
+                                : dropDownValueHint == 'STORAGE TANK 2'
+                                    ? containerTank2(
+                                        formSounding.storageTank[1])
+                                    : dropDownValueHint == 'STORAGE TANK 3'
+                                        ? containerTank3(
+                                            formSounding.storageTank[2])
+                                        : dropDownValueHint == 'STORAGE TANK 4'
+                                            ? containerTank4(
+                                                formSounding.storageTank[3])
+                                            : dropDownValueHint ==
+                                                    'STORAGE TANK 5'
+                                                ? containerTank5(
+                                                    formSounding.storageTank[4])
+                                                : Container()
+                            : Container();
+                      },
+                    ),
                   Divider(),
                   Text(
                     "Sounding Clarifikasi",
@@ -2094,10 +2288,10 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
       double sounding2 = double.parse(sounding2tank1.text);
       double sounding3 = double.parse(sounding3tank1.text);
       double average =
-      soundingFunction.averageSounding(sounding1, sounding2, sounding3);
+          soundingFunction.averageSounding(sounding1, sounding2, sounding3);
       if (average != null) {
         double ukuran =
-        soundingFunction.measureSounding(average, storageTank.surfacePlate);
+            soundingFunction.measureSounding(average, storageTank.surfacePlate);
         size1 = ukuran;
         storageTankCode1 = storageTank.code;
         storageTankID1 = storageTank.id;
@@ -2112,32 +2306,31 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
   }
 
   onChangeAverage2(StorageTank storageTank) {
-  try {
-    density2 = storageTank.density;
-    SoundingFunction soundingFunction = SoundingFunction();
-    double sounding1 = double.parse(sounding1tank2.text);
-    double sounding2 = double.parse(sounding2tank2.text);
-    double sounding3 = double.parse(sounding3tank2.text);
-    double average =
-    soundingFunction.averageSounding(sounding1, sounding2, sounding3);
-    if (average != null) {
-      double ukuran =
-      soundingFunction.measureSounding(average, storageTank.surfacePlate);
-      size2 = ukuran;
-      storageTankCode2 = storageTank.code;
-      storageTankID2 = storageTank.id;
-      ukuranTank2.text = ukuran.toStringAsFixed(3);
-      averageTank2.text = average.toStringAsFixed(3);
-    } else {
-      averageTank2.clear();
+    try {
+      density2 = storageTank.density;
+      SoundingFunction soundingFunction = SoundingFunction();
+      double sounding1 = double.parse(sounding1tank2.text);
+      double sounding2 = double.parse(sounding2tank2.text);
+      double sounding3 = double.parse(sounding3tank2.text);
+      double average =
+          soundingFunction.averageSounding(sounding1, sounding2, sounding3);
+      if (average != null) {
+        double ukuran =
+            soundingFunction.measureSounding(average, storageTank.surfacePlate);
+        size2 = ukuran;
+        storageTankCode2 = storageTank.code;
+        storageTankID2 = storageTank.id;
+        ukuranTank2.text = ukuran.toStringAsFixed(3);
+        averageTank2.text = average.toStringAsFixed(3);
+      } else {
+        averageTank2.clear();
+      }
+    } catch (e) {
+      print(e);
     }
-  } catch (e) {
-    print(e);
-  }
   }
 
   onChangeAverage3(StorageTank storageTank) {
-
     try {
       density3 = storageTank.density;
       SoundingFunction soundingFunction = SoundingFunction();
@@ -2145,10 +2338,10 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
       double sounding2 = double.parse(sounding2tank3.text);
       double sounding3 = double.parse(sounding3tank3.text);
       double average =
-      soundingFunction.averageSounding(sounding1, sounding2, sounding3);
+          soundingFunction.averageSounding(sounding1, sounding2, sounding3);
       if (average != null) {
         double ukuran =
-        soundingFunction.measureSounding(average, storageTank.surfacePlate);
+            soundingFunction.measureSounding(average, storageTank.surfacePlate);
         size3 = ukuran;
         storageTankCode3 = storageTank.code;
         storageTankID3 = storageTank.id;
@@ -2170,10 +2363,10 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
       double sounding2 = double.parse(sounding2tank4.text);
       double sounding3 = double.parse(sounding3tank4.text);
       double average =
-      soundingFunction.averageSounding(sounding1, sounding2, sounding3);
+          soundingFunction.averageSounding(sounding1, sounding2, sounding3);
       if (average != null) {
         double ukuran =
-        soundingFunction.measureSounding(average, storageTank.surfacePlate);
+            soundingFunction.measureSounding(average, storageTank.surfacePlate);
         size4 = ukuran;
         storageTankCode4 = storageTank.code;
         storageTankID4 = storageTank.id;
@@ -2195,10 +2388,10 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
       double sounding2 = double.parse(sounding2tank5.text);
       double sounding3 = double.parse(sounding3tank5.text);
       double average =
-      soundingFunction.averageSounding(sounding1, sounding2, sounding3);
+          soundingFunction.averageSounding(sounding1, sounding2, sounding3);
       if (average != null) {
         double ukuran =
-        soundingFunction.measureSounding(average, storageTank.surfacePlate);
+            soundingFunction.measureSounding(average, storageTank.surfacePlate);
         size5 = ukuran;
         storageTankCode5 = storageTank.code;
         storageTankID5 = storageTank.id;
@@ -2210,7 +2403,6 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
     } catch (e) {
       print(e);
     }
-
   }
 
   doSaveToDatabase() async {
@@ -2609,6 +2801,324 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
     }
   }
 
+  doSaveToDatabasePMP() async {
+    if (averageTank1.text.isNotEmpty && temperatureTank1.text.isNotEmpty ||
+        averageTank2.text.isNotEmpty && temperatureTank2.text.isNotEmpty ||
+        averageTank3.text.isNotEmpty && temperatureTank3.text.isNotEmpty ||
+        averageTank4.text.isNotEmpty && temperatureTank4.text.isNotEmpty) {
+      String username = await StorageUtils.readData('username');
+      int maxSounding = await StorageUtils.readData('max_sounding');
+      Sounding sounding = Sounding();
+      sounding.number = soundingId;
+      sounding.trTime = dateTime;
+      sounding.production = productionController.text;
+      sounding.note = noteController.text.toString();
+      sounding.createdBy = username;
+      sounding.sent = "false";
+      sounding.additional = 0;
+      sounding.totalStock = 0;
+      if (clarifierPureOil.text.isNotEmpty) {
+        sounding.clarifierPureOil =
+            double.parse(clarifierPureOil.text.toString());
+      }
+      if (clarifier1.text.isNotEmpty) {
+        sounding.clarifier1 = double.parse(clarifier1.text.toString());
+      }
+      if (clarifier2.text.isNotEmpty) {
+        sounding.clarifier2 = double.parse(clarifier2.text.toString());
+      }
+      if (widget.sounding != null) {
+        int soundingCount = await DatabaseSounding().updateSounding(sounding);
+        if (soundingCount > 0) {
+          if (averageTank1.text.isNotEmpty &&
+              temperatureTank1.text.isNotEmpty) {
+            SoundingCpo soundingCpo1 = SoundingCpo();
+            soundingCpo1.number = soundingId + "1";
+            soundingCpo1.trTime = dateTime;
+            soundingCpo1.density = density1;
+            soundingCpo1.sounding1 = double.parse(sounding1tank1.text);
+            soundingCpo1.sounding2 = double.parse(sounding2tank1.text);
+            soundingCpo1.sounding3 = double.parse(sounding3tank1.text);
+            soundingCpo1.temperature = double.parse(temperatureTank1.text);
+            soundingCpo1.avgSounding = double.parse(averageTank1.text);
+            soundingCpo1.mStorageTankCode = storageTankCode1;
+            soundingCpo1.mStorageTankId = storageTankID1;
+            soundingCpo1.size = size1;
+            soundingCpo1.sounding4 = double.parse("0.0");
+            soundingCpo1.maxSounding = maxSounding;
+            soundingCpo1.soundingId = soundingId;
+            soundingCpo1.isManual = isChecked1;
+            soundingCpo1.createdBy = username;
+            soundingCpo1.usingCopyData = usingDataYesterday;
+            if (isChecked1) {
+              soundingCpo1.roundingTonnage =
+                  double.parse(roundingTonaseTank1.text);
+            } else {
+              soundingCpo1.roundingTonnage = 0;
+            }
+            int exist = await DatabaseSoundingCpo()
+                .selectSoundingCpoByIDCpo(soundingCpo1);
+            if (exist > 0) {
+              int soundingCountCpo1 =
+                  await DatabaseSoundingCpo().updateSoundingCpo(soundingCpo1);
+              print("edited sounding cpo 1 $soundingCountCpo1");
+            } else {
+              int soundingCountCpo1 =
+                  await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo1);
+              print("insert sounding cpo 1 $soundingCountCpo1");
+            }
+          }
+          if (averageTank2.text.isNotEmpty &&
+              temperatureTank2.text.isNotEmpty) {
+            SoundingCpo soundingCpo2 = SoundingCpo();
+            soundingCpo2.number = soundingId + "2";
+            soundingCpo2.trTime = dateTime;
+            soundingCpo2.density = density2;
+            soundingCpo2.sounding1 = double.parse(sounding1tank2.text);
+            soundingCpo2.sounding2 = double.parse(sounding2tank2.text);
+            soundingCpo2.sounding3 = double.parse(sounding3tank2.text);
+            soundingCpo2.sounding4 = double.parse("0.0");
+            soundingCpo2.temperature = double.parse(temperatureTank2.text);
+            soundingCpo2.avgSounding = double.parse(averageTank2.text);
+            soundingCpo2.mStorageTankCode = storageTankCode2;
+            soundingCpo2.mStorageTankId = storageTankID2;
+            soundingCpo2.size = size2;
+            soundingCpo2.maxSounding = maxSounding;
+            soundingCpo2.soundingId = soundingId;
+            soundingCpo2.isManual = isChecked2;
+            soundingCpo2.createdBy = username;
+            soundingCpo2.usingCopyData = usingDataYesterday;
+            if (isChecked2) {
+              soundingCpo2.roundingTonnage =
+                  double.parse(roundingTonaseTank2.text);
+            } else {
+              soundingCpo2.roundingTonnage = 0;
+            }
+            int exist = await DatabaseSoundingCpo()
+                .selectSoundingCpoByIDCpo(soundingCpo2);
+            if (exist > 0) {
+              int soundingCountCpo2 =
+                  await DatabaseSoundingCpo().updateSoundingCpo(soundingCpo2);
+              print("edited sounding cpo 2 $soundingCountCpo2");
+            } else {
+              int soundingCountCpo2 =
+                  await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo2);
+              print("insert sounding cpo 2 $soundingCountCpo2");
+            }
+          }
+          if (averageTank3.text.isNotEmpty &&
+              temperatureTank3.text.isNotEmpty) {
+            SoundingCpo soundingCpo3 = SoundingCpo();
+            soundingCpo3.number = soundingId + "3";
+            soundingCpo3.trTime = dateTime;
+            soundingCpo3.density = density3;
+            soundingCpo3.sounding1 = double.parse(sounding1tank3.text);
+            soundingCpo3.sounding2 = double.parse(sounding2tank3.text);
+            soundingCpo3.sounding3 = double.parse(sounding3tank3.text);
+            soundingCpo3.sounding4 = double.parse("0.0");
+            soundingCpo3.temperature = double.parse(temperatureTank3.text);
+            soundingCpo3.avgSounding = double.parse(averageTank3.text);
+            soundingCpo3.mStorageTankCode = storageTankCode3;
+            soundingCpo3.mStorageTankId = storageTankID3;
+            soundingCpo3.size = size3;
+            soundingCpo3.maxSounding = maxSounding;
+            soundingCpo3.soundingId = soundingId;
+            soundingCpo3.isManual = isChecked3;
+            soundingCpo3.createdBy = username;
+            soundingCpo3.usingCopyData = usingDataYesterday;
+            if (isChecked3) {
+              soundingCpo3.roundingTonnage =
+                  double.parse(roundingTonaseTank3.text);
+            } else {
+              soundingCpo3.roundingTonnage = 0;
+            }
+            int exist = await DatabaseSoundingCpo()
+                .selectSoundingCpoByIDCpo(soundingCpo3);
+            if (exist > 0) {
+              int soundingCountCpo3 =
+                  await DatabaseSoundingCpo().updateSoundingCpo(soundingCpo3);
+              print("edited sounding cpo 3 $soundingCountCpo3");
+            } else {
+              int soundingCountCpo3 =
+                  await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo3);
+              print("insert sounding cpo 3 $soundingCountCpo3");
+            }
+          }
+          if (averageTank4.text.isNotEmpty &&
+              temperatureTank4.text.isNotEmpty) {
+            SoundingCpo soundingCpo4 = SoundingCpo();
+            soundingCpo4.number = soundingId + "4";
+            soundingCpo4.trTime = dateTime;
+            soundingCpo4.density = density4;
+            soundingCpo4.sounding1 = double.parse(sounding1tank4.text);
+            soundingCpo4.sounding2 = double.parse(sounding2tank4.text);
+            soundingCpo4.sounding3 = double.parse(sounding3tank4.text);
+            soundingCpo4.sounding4 = double.parse("0.0");
+            soundingCpo4.temperature = double.parse(temperatureTank4.text);
+            soundingCpo4.avgSounding = double.parse(averageTank4.text);
+            soundingCpo4.mStorageTankCode = storageTankCode4;
+            soundingCpo4.mStorageTankId = storageTankID4;
+            soundingCpo4.size = size4;
+            soundingCpo4.maxSounding = maxSounding;
+            soundingCpo4.soundingId = soundingId;
+            soundingCpo4.isManual = isChecked4;
+            soundingCpo4.createdBy = username;
+            soundingCpo4.usingCopyData = usingDataYesterday;
+            if (isChecked4) {
+              soundingCpo4.roundingTonnage =
+                  double.parse(roundingTonaseTank4.text);
+            } else {
+              soundingCpo4.roundingTonnage = 0;
+            }
+            int exist = await DatabaseSoundingCpo()
+                .selectSoundingCpoByIDCpo(soundingCpo4);
+            if (exist > 0) {
+              int soundingCountCpo4 =
+                  await DatabaseSoundingCpo().updateSoundingCpo(soundingCpo4);
+              print("edited sounding cpo 4 $soundingCountCpo4");
+            } else {
+              int soundingCountCpo4 =
+                  await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo4);
+              print("insert sounding cpo 4 $soundingCountCpo4");
+            }
+          }
+          context.read<ListSoundingNotifier>().updateListView();
+          Navigator.pop(context, sounding);
+        }
+      } else {
+        if (averageTank1.text.isNotEmpty && temperatureTank1.text.isNotEmpty) {
+          SoundingCpo soundingCpo1 = SoundingCpo();
+          soundingCpo1.number = soundingId + "1";
+          soundingCpo1.trTime = dateTime;
+          soundingCpo1.density = density1;
+          soundingCpo1.sounding1 = double.parse(sounding1tank1.text);
+          soundingCpo1.sounding2 = double.parse(sounding2tank1.text);
+          soundingCpo1.sounding3 = double.parse(sounding3tank1.text);
+          soundingCpo1.temperature = double.parse(temperatureTank1.text);
+          soundingCpo1.avgSounding = double.parse(averageTank1.text);
+          soundingCpo1.mStorageTankCode = storageTankCode1;
+          soundingCpo1.mStorageTankId = storageTankID1;
+          soundingCpo1.size = size1;
+          soundingCpo1.sounding4 = double.parse("0.0");
+          soundingCpo1.maxSounding = maxSounding;
+          soundingCpo1.soundingId = soundingId;
+          soundingCpo1.isManual = isChecked1;
+          soundingCpo1.createdBy = username;
+          soundingCpo1.usingCopyData = usingDataYesterday;
+          if (isChecked1) {
+            soundingCpo1.roundingTonnage =
+                double.parse(roundingTonaseTank1.text);
+          } else {
+            soundingCpo1.roundingTonnage = 0;
+          }
+          int soundingCountCpo1 =
+              await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo1);
+          print("masuk sounding cpo 1 $soundingCountCpo1");
+        }
+        if (averageTank2.text.isNotEmpty && temperatureTank2.text.isNotEmpty) {
+          SoundingCpo soundingCpo2 = SoundingCpo();
+          soundingCpo2.number = soundingId + "2";
+          soundingCpo2.trTime = dateTime;
+          soundingCpo2.density = density2;
+          soundingCpo2.sounding1 = double.parse(sounding1tank2.text);
+          soundingCpo2.sounding2 = double.parse(sounding2tank2.text);
+          soundingCpo2.sounding3 = double.parse(sounding3tank2.text);
+          soundingCpo2.sounding4 = double.parse("0.0");
+          soundingCpo2.temperature = double.parse(temperatureTank2.text);
+          soundingCpo2.avgSounding = double.parse(averageTank2.text);
+          soundingCpo2.mStorageTankCode = storageTankCode2;
+          soundingCpo2.mStorageTankId = storageTankID2;
+          soundingCpo2.size = size2;
+          soundingCpo2.maxSounding = maxSounding;
+          soundingCpo2.soundingId = soundingId;
+          soundingCpo2.isManual = isChecked2;
+          soundingCpo2.createdBy = username;
+          soundingCpo2.usingCopyData = usingDataYesterday;
+          if (isChecked2) {
+            soundingCpo2.roundingTonnage =
+                double.parse(roundingTonaseTank2.text);
+          } else {
+            soundingCpo2.roundingTonnage = 0;
+          }
+          int soundingCountCpo2 =
+              await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo2);
+          print("masuk sounding cpo 2 $soundingCountCpo2");
+        }
+        if (averageTank3.text.isNotEmpty && temperatureTank3.text.isNotEmpty) {
+          SoundingCpo soundingCpo3 = SoundingCpo();
+          soundingCpo3.number = soundingId + "3";
+          soundingCpo3.trTime = dateTime;
+          soundingCpo3.density = density3;
+          soundingCpo3.sounding1 = double.parse(sounding1tank3.text);
+          soundingCpo3.sounding2 = double.parse(sounding2tank3.text);
+          soundingCpo3.sounding3 = double.parse(sounding3tank3.text);
+          soundingCpo3.sounding4 = double.parse("0.0");
+          soundingCpo3.temperature = double.parse(temperatureTank3.text);
+          soundingCpo3.avgSounding = double.parse(averageTank3.text);
+          soundingCpo3.mStorageTankCode = storageTankCode3;
+          soundingCpo3.mStorageTankId = storageTankID3;
+          soundingCpo3.size = size3;
+          soundingCpo3.maxSounding = maxSounding;
+          soundingCpo3.soundingId = soundingId;
+          soundingCpo3.isManual = isChecked3;
+          soundingCpo3.createdBy = username;
+          soundingCpo3.usingCopyData = usingDataYesterday;
+          if (isChecked3) {
+            soundingCpo3.roundingTonnage =
+                double.parse(roundingTonaseTank3.text);
+          } else {
+            soundingCpo3.roundingTonnage = 0;
+          }
+          int soundingCountCpo3 =
+              await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo3);
+          print("masuk sounding cpo 3 $soundingCountCpo3");
+        }
+        if (averageTank4.text.isNotEmpty && temperatureTank4.text.isNotEmpty) {
+          SoundingCpo soundingCpo4 = SoundingCpo();
+          soundingCpo4.number = soundingId + "4";
+          soundingCpo4.trTime = dateTime;
+          soundingCpo4.density = density4;
+          soundingCpo4.sounding1 = double.parse(sounding1tank4.text);
+          soundingCpo4.sounding2 = double.parse(sounding2tank4.text);
+          soundingCpo4.sounding3 = double.parse(sounding3tank4.text);
+          soundingCpo4.sounding4 = double.parse("0.0");
+          soundingCpo4.temperature = double.parse(temperatureTank4.text);
+          soundingCpo4.avgSounding = double.parse(averageTank4.text);
+          soundingCpo4.mStorageTankCode = storageTankCode4;
+          soundingCpo4.mStorageTankId = storageTankID4;
+          soundingCpo4.size = size4;
+          soundingCpo4.maxSounding = maxSounding;
+          soundingCpo4.soundingId = soundingId;
+          soundingCpo4.isManual = isChecked4;
+          soundingCpo4.createdBy = username;
+          soundingCpo4.usingCopyData = usingDataYesterday;
+          if (isChecked4) {
+            soundingCpo4.roundingTonnage =
+                double.parse(roundingTonaseTank4.text);
+          } else {
+            soundingCpo4.roundingTonnage = 0;
+          }
+          int soundingCountCpo4 =
+              await DatabaseSoundingCpo().insertSoundingCpo(soundingCpo4);
+          print("masuk sounding cpo 4 $soundingCountCpo4");
+        }
+        List<SoundingCpo> count =
+            await DatabaseSoundingCpo().selectSoundingCpo(sounding);
+        if (count.length > 0) {
+          await DatabaseSounding().insertSounding(sounding);
+        }
+        context.read<ListSoundingNotifier>().updateListView();
+        context.read<HomeNotifier>().doGetSoundingUnsent();
+        Navigator.pop(context);
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: "Tolong Cek Data Sounding",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER);
+    }
+  }
+
   showDataYesterdayDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -2648,47 +3158,80 @@ class _FormSoundingScreenState extends State<FormSoundingScreen> {
     List<StorageTank> list = context.read<FormSoundingNotifier>().storageTank;
     print(list);
     String message = "";
-    if (list.length == 1) {
-      if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
-        message = "Data Tank 1 belum lengkap,";
+    if (companyAlias == 'PMP') {
+      if (list.length == 1) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        }
+      } else if (list.length == 2) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
+          message = "Data Tank 2 belum lengkap,";
+        }
+      } else if (list.length == 3) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
+          message = "Data Tank 2 belum lengkap,";
+        } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
+          message = "Data Tank 3 belum lengkap,";
+        }
+      } else if (list.length == 4) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
+          message = "Data Tank 2 belum lengkap,";
+        } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
+          message = "Data Tank 3 belum lengkap,";
+        } else if (averageTank4.text.isEmpty && temperatureTank4.text.isEmpty) {
+          message = "Data Tank 4 belum lengkap,";
+        }
       }
-    } else if (list.length == 2) {
-      if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
-        message = "Data Tank 1 belum lengkap,";
-      } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
-        message = "Data Tank 2 belum lengkap,";
-      }
-    } else if (list.length == 3) {
-      if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
-        message = "Data Tank 1 belum lengkap,";
-      } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
-        message = "Data Tank 2 belum lengkap,";
-      } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
-        message = "Data Tank 3 belum lengkap,";
-      }
-    } else if (list.length == 4) {
-      if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
-        message = "Data Tank 1 belum lengkap,";
-      } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
-        message = "Data Tank 2 belum lengkap,";
-      } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
-        message = "Data Tank 3 belum lengkap,";
-      } else if (averageTank4.text.isEmpty && temperatureTank4.text.isEmpty) {
-        message = "Data Tank 4 belum lengkap,";
-      }
-    } else if (list.length == 5) {
-      if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
-        message = "Data Tank 1 belum lengkap,";
-      } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
-        message = "Data Tank 2 belum lengkap,";
-      } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
-        message = "Data Tank 3 belum lengkap,";
-      } else if (averageTank4.text.isEmpty && temperatureTank4.text.isEmpty) {
-        message = "Data Tank 4 belum lengkap,";
-      } else if (averageTank5.text.isEmpty && temperatureTank5.text.isEmpty) {
-        message = "Data Tank 5 belum lengkap,";
+    } else {
+      if (list.length == 1) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        }
+      } else if (list.length == 2) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
+          message = "Data Tank 2 belum lengkap,";
+        }
+      } else if (list.length == 3) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
+          message = "Data Tank 2 belum lengkap,";
+        } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
+          message = "Data Tank 3 belum lengkap,";
+        }
+      } else if (list.length == 4) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
+          message = "Data Tank 2 belum lengkap,";
+        } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
+          message = "Data Tank 3 belum lengkap,";
+        } else if (averageTank4.text.isEmpty && temperatureTank4.text.isEmpty) {
+          message = "Data Tank 4 belum lengkap,";
+        }
+      } else if (list.length == 5) {
+        if (averageTank1.text.isEmpty && temperatureTank1.text.isEmpty) {
+          message = "Data Tank 1 belum lengkap,";
+        } else if (averageTank2.text.isEmpty && temperatureTank2.text.isEmpty) {
+          message = "Data Tank 2 belum lengkap,";
+        } else if (averageTank3.text.isEmpty && temperatureTank3.text.isEmpty) {
+          message = "Data Tank 3 belum lengkap,";
+        } else if (averageTank4.text.isEmpty && temperatureTank4.text.isEmpty) {
+          message = "Data Tank 4 belum lengkap,";
+        } else if (averageTank5.text.isEmpty && temperatureTank5.text.isEmpty) {
+          message = "Data Tank 5 belum lengkap,";
+        }
       }
     }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {

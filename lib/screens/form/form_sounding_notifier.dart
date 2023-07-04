@@ -22,7 +22,9 @@ class FormSoundingNotifier extends ChangeNotifier {
       _storageTank.add(storageTank);
       _items.add(storageTank.name);
     }
+
     print(items);
+    print(_storageTank.map((e) => e.code).toList());
     notifyListeners();
   }
 }

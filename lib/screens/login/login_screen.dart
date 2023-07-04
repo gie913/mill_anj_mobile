@@ -28,6 +28,23 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.only(bottom: 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(Strings.APP_VERSION),
+              const SizedBox(height: 4),
+              Text(
+                'Powered By ANJ',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
         body: Center(
           child: SingleChildScrollView(
             child: Container(
@@ -48,7 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           Strings.ANJ_LOGO,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: MediaQuery.of(context).size.width * 0.12),
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.12),
                         )
                       ],
                     ),
@@ -82,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           filled: true,
                         ),
                         validator: (value) {
-                            return _validator(value);
+                          return _validator(value);
                         },
                       ),
                     ),

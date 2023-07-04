@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/typicons_icons.dart';
@@ -112,7 +114,7 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
       isChecked4 = false,
       isChecked5 = false;
   bool usingDataYesterday = false;
-  String dateTime, companyName = "";
+  String dateTime, companyName = "", companyAlias = '';
   bool _validate = false;
   String dropDownValueHint = 'STORAGE TANK 1';
   String dropDownValueVerifierHint;
@@ -152,19 +154,34 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
   }
 
   getVerifier() async {
-    List<DataVerifier> listVerifier = await DatabaseVerifier().selectVerifier(widget.sounding.number);
+    List<DataVerifier> listVerifier =
+        await DatabaseVerifier().selectVerifier(widget.sounding.number);
     setState(() {
       this.listVerifier = listVerifier;
     });
   }
 
   getSoundingCPO(Sounding sounding) async {
+    String companyAliasTemp = await StorageUtils.readData('company_alias');
+    setState(() {
+      companyAlias = companyAliasTemp;
+    });
+
+    if (companyAlias == 'PMP') {
+      getSoundingCPOPMP(sounding);
+    } else {
+      getSoundingCPODefault(sounding);
+    }
+  }
+
+  getSoundingCPODefault(Sounding sounding) async {
     List<SoundingCpo> list =
         await DatabaseSoundingCpo().selectSoundingCpo(sounding);
     setState(() {
       lisSoundingCpo = list;
     });
     for (int i = 0; i < list.length; i++) {
+      log("cek code : ${list[i].mStorageTankCode}");
       if (list[i].mStorageTankCode == "ATK1") {
         sounding1tank1.text = list[i].sounding1.toString();
         sounding2tank1.text = list[i].sounding2.toString();
@@ -229,6 +246,69 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
           usingDataYesterday = list[i].usingCopyData;
         }
         roundingTonaseTank5.text = list[i].roundingTonnage.toString();
+      }
+    }
+  }
+
+  getSoundingCPOPMP(Sounding sounding) async {
+    List<SoundingCpo> list =
+        await DatabaseSoundingCpo().selectSoundingCpo(sounding);
+    setState(() {
+      lisSoundingCpo = list;
+    });
+    for (int i = 0; i < list.length; i++) {
+      log("cek code : ${list[i].mStorageTankCode}");
+      if (list[i].mStorageTankCode == "ATK1") {
+        sounding1tank1.text = list[i].sounding1.toString();
+        sounding2tank1.text = list[i].sounding2.toString();
+        sounding3tank1.text = list[i].sounding3.toString();
+        averageTank1.text = list[i].avgSounding.toString();
+        temperatureTank1.text = list[i].temperature.toString();
+        ukuranTank1.text = list[i].size.toStringAsFixed(3);
+        isChecked1 = list[i].isManual;
+        if (list[i].usingCopyData != null) {
+          usingDataYesterday = list[i].usingCopyData;
+        }
+        roundingTonaseTank1.text = list[i].roundingTonnage.toString();
+      }
+      if (list[i].mStorageTankCode == "ATK2") {
+        sounding1tank2.text = list[i].sounding1.toString();
+        sounding2tank2.text = list[i].sounding2.toString();
+        sounding3tank2.text = list[i].sounding3.toString();
+        averageTank2.text = list[i].avgSounding.toString();
+        temperatureTank2.text = list[i].temperature.toString();
+        ukuranTank2.text = list[i].size.toStringAsFixed(3);
+        isChecked2 = list[i].isManual;
+        if (list[i].usingCopyData != null) {
+          usingDataYesterday = list[i].usingCopyData;
+        }
+        roundingTonaseTank2.text = list[i].roundingTonnage.toString();
+      }
+      if (list[i].mStorageTankCode == "ATK11") {
+        sounding1tank3.text = list[i].sounding1.toString();
+        sounding2tank3.text = list[i].sounding2.toString();
+        sounding3tank3.text = list[i].sounding3.toString();
+        averageTank3.text = list[i].avgSounding.toString();
+        temperatureTank3.text = list[i].temperature.toString();
+        ukuranTank3.text = list[i].size.toStringAsFixed(3);
+        isChecked3 = list[i].isManual;
+        if (list[i].usingCopyData != null) {
+          usingDataYesterday = list[i].usingCopyData;
+        }
+        roundingTonaseTank3.text = list[i].roundingTonnage.toString();
+      }
+      if (list[i].mStorageTankCode == "ATK12") {
+        sounding1tank4.text = list[i].sounding1.toString();
+        sounding2tank4.text = list[i].sounding2.toString();
+        sounding3tank4.text = list[i].sounding3.toString();
+        averageTank4.text = list[i].avgSounding.toString();
+        temperatureTank4.text = list[i].temperature.toString();
+        ukuranTank4.text = list[i].size.toStringAsFixed(3);
+        isChecked4 = list[i].isManual;
+        if (list[i].usingCopyData != null) {
+          usingDataYesterday = list[i].usingCopyData;
+        }
+        roundingTonaseTank4.text = list[i].roundingTonnage.toString();
       }
     }
   }
@@ -334,12 +414,12 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
                         Text("Tanki", style: text14Bold),
                         Flexible(
                           child: Container(
-                            width: 200,
                             child: Card(
                               child: DropdownButtonHideUnderline(
                                 child: ButtonTheme(
                                   alignedDropdown: true,
                                   child: DropdownButton(
+                                      alignment: Alignment.centerRight,
                                       value: dropDownValueHint,
                                       items: formSounding.items
                                           .map((String item) =>
@@ -361,25 +441,49 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
                       ],
                     );
                   }),
-                  Consumer<FormSoundingNotifier>(
+                  if (companyAlias == 'PMP')
+                    Consumer<FormSoundingNotifier>(
                       builder: (context, formSounding, child) {
-                    return formSounding.storageTank.isNotEmpty
-                        ? dropDownValueHint == 'STORAGE TANK 1'
-                            ? containerTank1(formSounding.storageTank[0])
-                            : dropDownValueHint == 'STORAGE TANK 2'
-                                ? containerTank2(formSounding.storageTank[1])
-                                : dropDownValueHint == 'STORAGE TANK 3'
-                                    ? containerTank3(
-                                        formSounding.storageTank[2])
-                                    : dropDownValueHint == 'STORAGE TANK 4'
-                                        ? containerTank4(
-                                            formSounding.storageTank[3])
-                                        : dropDownValueHint == 'STORAGE TANK 5'
-                                            ? containerTank5(
-                                                formSounding.storageTank[4])
+                        return formSounding.storageTank.isNotEmpty
+                            ? dropDownValueHint == 'STORAGE TANK 1'
+                                ? containerTank1(formSounding.storageTank[0])
+                                : dropDownValueHint == 'STORAGE TANK 2'
+                                    ? containerTank2(
+                                        formSounding.storageTank[1])
+                                    : dropDownValueHint == 'STORAGE TANK 1 CPKO'
+                                        ? containerTank3(
+                                            formSounding.storageTank[2])
+                                        : dropDownValueHint ==
+                                                'STORAGE TANK 2 CPKO'
+                                            ? containerTank4(
+                                                formSounding.storageTank[3])
                                             : Container()
-                        : Container();
-                  }),
+                            : Container();
+                      },
+                    )
+                  else
+                    Consumer<FormSoundingNotifier>(
+                      builder: (context, formSounding, child) {
+                        return formSounding.storageTank.isNotEmpty
+                            ? dropDownValueHint == 'STORAGE TANK 1'
+                                ? containerTank1(formSounding.storageTank[0])
+                                : dropDownValueHint == 'STORAGE TANK 2'
+                                    ? containerTank2(
+                                        formSounding.storageTank[1])
+                                    : dropDownValueHint == 'STORAGE TANK 3'
+                                        ? containerTank3(
+                                            formSounding.storageTank[2])
+                                        : dropDownValueHint == 'STORAGE TANK 4'
+                                            ? containerTank4(
+                                                formSounding.storageTank[3])
+                                            : dropDownValueHint ==
+                                                    'STORAGE TANK 5'
+                                                ? containerTank5(
+                                                    formSounding.storageTank[4])
+                                                : Container()
+                            : Container();
+                      },
+                    ),
                   Divider(),
                   Text(
                     "Sounding Clarifikasi",
@@ -500,21 +604,23 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
                   ),
                   listVerifier.isNotEmpty
                       ? Container(
-                          height: 80*listVerifier.length.toDouble(),
+                          height: 80 * listVerifier.length.toDouble(),
                           child: ListView.builder(
-                                itemCount: listVerifier.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    ),
-                                      child: ListTile(
-                                        leading: Icon(Icons.account_circle, color: Colors.blue),
-                                        title: Text('${listVerifier[index].name}'),
-                                        subtitle: Text('${listVerifier[index].levelLabel}'),
-                                      ),
-                                    );
-                                }),
+                              itemCount: listVerifier.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  child: ListTile(
+                                    leading: Icon(Icons.account_circle,
+                                        color: Colors.blue),
+                                    title: Text('${listVerifier[index].name}'),
+                                    subtitle: Text(
+                                        '${listVerifier[index].levelLabel}'),
+                                  ),
+                                );
+                              }),
                         )
                       : Container(),
                   SizedBox(height: 20),
@@ -1717,7 +1823,6 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
                           child: TextField(
                             controller: passwordController,
                             textAlign: TextAlign.center,
-
                             keyboardType: TextInputType.text,
                             obscureText: true,
                             decoration: InputDecoration(
@@ -1754,16 +1859,15 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
     );
   }
 
-
   doSendSounding(Sounding sounding, List<SoundingCpo> soundingCpo) {
-    if(listVerifier.length >= 2) {
+    if (listVerifier.length >= 2) {
       List<String> verifier = [];
-      for(int i =0; i < listVerifier.length; i++) {
+      for (int i = 0; i < listVerifier.length; i++) {
         verifier.add(listVerifier[i].mUserId);
       }
       loadingDialog(context);
-      SendSoundingRepository(APIEndpoint.BASE_URL)
-          .doSendSoundingRepository(sounding, soundingCpo, verifier, onSuccess, onError);
+      SendSoundingRepository(APIEndpoint.BASE_URL).doSendSoundingRepository(
+          sounding, soundingCpo, verifier, onSuccess, onError);
     } else {
       doSetVerifier();
     }
@@ -1816,8 +1920,8 @@ class _DetailSoundingScreenState extends State<DetailSoundingScreen> {
       verifierTemp.name = response.data.name;
       verifierTemp.levelLabel = response.data.levelLabel;
       verifierTemp.idForm = widget.sounding.number;
-      var contain =
-          listVerifier.where((element) => element.mUserId == verifierTemp.mUserId);
+      var contain = listVerifier
+          .where((element) => element.mUserId == verifierTemp.mUserId);
       if (contain.isEmpty) {
         listVerifier.add(verifierTemp);
         setState(() {});

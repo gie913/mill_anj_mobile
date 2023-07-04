@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,7 @@ class LoginRepository {
     this.baseUrl = baseUrl;
     HttpClient httpClient = new HttpClient()
       ..badCertificateCallback =
-      ((X509Certificate cert, String host, int port) => true);
+          ((X509Certificate cert, String host, int port) => true);
     this.ioClient = new IOClient(httpClient);
   }
 
@@ -35,6 +36,7 @@ class LoginRepository {
       print(uri);
       print(map.toString());
       print(response.body);
+      log('cek login : ${json.decode(response.body)}');
       Response apiResponse = Response.fromJson(json.decode(response.body));
       if (apiResponse.success == true) {
         onSuccess(context, apiResponse);

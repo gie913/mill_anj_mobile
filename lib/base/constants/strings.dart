@@ -1,7 +1,7 @@
 class Strings {
   static const String ANJ_LOGO = "ANJ";
   static const String APP_NAME = "e-Mill ANJ";
-  static const String APP_VERSION = "v.2.0.0";
+  static const String APP_VERSION = "v.2.0.1";
   static const String POWERED_BY = "Powered By ANJ";
 
   static const String FAILED_GET_STORAGE_TANK =
