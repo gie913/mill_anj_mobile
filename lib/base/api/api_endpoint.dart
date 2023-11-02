@@ -1,8 +1,11 @@
 class APIEndpoint {
+  // Prod
+  // static const BASE_URL =
+  //     "https://e-mill.anj-group.co.id/backend/public/index.php/";
+
+  // Dev
   static const BASE_URL =
-      "https://e-mill.anj-group.co.id/backend/public/index.php/";
-  static const BASE_URL_DEV =
-      "https://etrace-dev.anj-group.co.id/mill-backend/public/index.php/login";
+      "https://etrace-dev.anj-group.co.id/mill-backend/public/index.php/";
 
   static const LOGIN_ENDPOINT = "api/v1/signin";
   static const LOGOUT_ENDPOINT = "api/v1/signout";
